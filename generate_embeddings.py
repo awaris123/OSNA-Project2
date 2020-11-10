@@ -42,9 +42,15 @@ class Preprocessing:
     title2_embedding = self.get_sentence_embedding(row['title2_en'])
     return Concatenate(axis=1)([title1_embedding, title2_embedding])
 
+'''
 preprocessing = Preprocessing("./GoogleNews-vectors-negative300.bin.gz")
 #preprocessing.get_sentence_embedding("Test test test.")
 
 df=pd.read_csv("https://raw.githubusercontent.com/awaris123/OSNA-Project2/main/option1-data/train.csv")
 df['joint_embedding'] = df.apply(preprocessing.preprocess_row, axis=1)
 print(df.head())
+
+import pickle
+with open('train_df_w_embeddings.pickle', 'wb') as f:
+  pickle.dump(df, f)
+'''
