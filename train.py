@@ -38,11 +38,16 @@ targets = label_encoder.fit_transform(df['label'].values)
 # convert targets into 1-hot form??
 # OneHotEncoder()
 joint_embedding_matrix=np.array(joint_embedding_matrix.tolist()).astype(np.float64)
+
+'''
+# nan check
 array_sum = np.sum(joint_embedding_matrix)
 array_sum = np.sum(array_sum)
 print(len([print(i, np.sum(item)) for i, item in enumerate(joint_embedding_matrix) if (np.isnan(np.sum(item)))]))
 array_has_nan = np.isnan(array_sum)
 print(array_has_nan)
+'''
+
 
 X_train, X_test, y_train, y_test = train_test_split(joint_embedding_matrix, targets, test_size=0.2)
 y_train = keras.utils.to_categorical(y_train, 3)
