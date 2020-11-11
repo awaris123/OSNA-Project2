@@ -7,7 +7,7 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 import numpy as np
 
 np.random.seed(0)
-params={'lr': 0.001, 'opt': 'adam', 'model': 'SimpleClassifier', 'loss': 'crossentropy', 'batch_size': 200}
+params={'lr': 0.01, 'opt': 'adam', 'model': 'SimpleClassifier', 'loss': 'crossentropy', 'batch_size': 200}
 
 simple_classifier = SimpleClassifier()
 
@@ -26,6 +26,7 @@ def filter_nans(arr):
 # load data
 with open("train_df_w_embeddings.pickle", 'rb') as f:
     df = pickle.load(f)
+    #implement sampling
     df['joint_embedding']=df['joint_embedding'].apply(lambda x: x.numpy()[0].tolist())
     df['filter']=df['joint_embedding'].apply(lambda x: filter_nans(x))
     df = df[df['filter']==False]
@@ -57,7 +58,7 @@ print(y_train.shape)
 simple_classifier.model.summary()
 simple_classifier.model.fit(X_train, y_train,
           batch_size=params['batch_size'],
-          epochs=25,
+          epochs=50,
           verbose=1, validation_data=(X_test, y_test))
 
 simple_classifier.model.save("./test/simple_classifier")
