@@ -45,7 +45,7 @@ simple_classifier.model.compile(optimizer=opt, loss=keras.losses.CategoricalCros
 def filter_nans(arr):
     arr=np.asarray(arr).astype(np.float64)
     return np.isnan(np.sum(arr))
-path_to_df = "trained_word2vec_embeddings.pickle" #"train_df_w_embeddings.pickle"
+path_to_df = "train_df_w_embeddings.pickle" #"train_df_w_embeddings.pickle"
 # load data
 with open(path_to_df, 'rb') as f:
     df = pickle.load(f)
@@ -96,5 +96,5 @@ simple_classifier.model.fit(X_train, y_train,
           epochs=50,
           verbose=1, validation_data=(X_test, y_test))
 
-simple_classifier.model.save("./test/simple_classifier_w_our_embeddings_only_train_balanced")
+simple_classifier.model.save("./test/simple_classifier_w_google_word2vec_only_train_balanced")
 

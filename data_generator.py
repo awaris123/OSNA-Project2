@@ -9,10 +9,12 @@ from sklearn.preprocessing import LabelEncoder
 
 class DataGenerator(keras.utils.Sequence):
     'Generates data for Keras'
-    def __init__(self, df, y_data, dim=(768*2,), total_samples=0, batch_size=200, n_classes=3, shuffle=True):
+    def __init__(self, df, y_data, dim=(768*2,), pretrained_embeddings=True, total_samples=0, batch_size=200, n_classes=3, shuffle=True):
         'Initialization'
         self.df = df
-        self.bert_embedding_model= SentenceTransformer('bert-base-nli-mean-tokens')
+        if not pretrained_embeddings:
+            self.bert_embedding_model = SentenceTransformer('bert-base-nli-mean-tokens')
+        self.pretrained_embeddings = pretrained_embeddings
         self.batch_size = batch_size
         self.labels = y_data
         self.n_classes = n_classes
@@ -46,13 +48,16 @@ class DataGenerator(keras.utils.Sequence):
         # Initialization
         X = np.empty((self.batch_size, *self.dim))
         y = np.empty((self.batch_size), dtype=int)
-
-        # Generate data
-        for i, ID in enumerate(list(range(start, start+self.batch_size))):
-            # Store sample
-            X[i,] = self.process_title(self.df.iloc[ID]) #process
-            # Store class
-            y[i] = self.labels[ID]
+        if not self.pretrained_embeddings:
+            # Generate data
+            for i, ID in enumerate(list(range(start, start+self.batch_size))):
+                # Store sample
+                X[i,] = self.process_title(self.df.iloc[ID]) #process
+                # Store class
+                y[i] = self.labels[ID]
+        else:
+            X= self.df[start:start+self.batch_size, :]
+            y = self.labels[start:start+self.batch_size]
         return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
 
 '''
@@ -93,6 +98,7 @@ model.fit_generator(generator=training_generator,
 
 
 '''
+'''
 from sklearn.model_selection import train_test_split
 from models import SimpleClassifier
 
@@ -104,11 +110,12 @@ targets = label_encoder.fit_transform(df['label'].values)
 X_train, X_test, y_train, y_test = train_test_split(df[['title1_en', 'title2_en']], targets, test_size=0.2)
 df_train = pd.DataFrame()
 
+params={'lr': 0.01, 'opt': 'adam', 'model': 'SimpleClassifier', 'loss': 'crossentropy', 'batch_size': 100}
+
 training_generator = DataGenerator(X_train, y_train, total_samples=y_train.shape[0], batch_size=params['batch_size'])
 validation_generator = DataGenerator(X_test, y_test, total_samples=y_test.shape[0], batch_size=params['batch_size'])
 
 model = SimpleClassifier(input_shape=768*2)
-params={'lr': 0.01, 'opt': 'adam', 'model': 'SimpleClassifier', 'loss': 'crossentropy', 'batch_size': 100}
 
 
 lr_schedule = keras.optimizers.schedules.ExponentialDecay(
@@ -124,3 +131,5 @@ model.model.fit_generator(generator=training_generator,
                     use_multiprocessing=False,
                     verbose=1)
 model.model.save("./test/bert_mlp_unbalanced")
+'''
+
