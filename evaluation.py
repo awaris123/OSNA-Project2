@@ -62,7 +62,6 @@ if(true_test):
     final_df['label'] = encoder.inverse_transform(np.argmax(predictions, axis=1))
     final_df['id'] = df['id']
 
-    final_df['label'] = 'unrelated'
     #convert to csv
     final_df.to_csv("sample_submission.csv", index=False)
     exit()

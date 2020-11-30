@@ -32,7 +32,7 @@ def balance(df, label_encoder=None):
 np.random.seed(0)
 params={'lr': 0.01, 'opt': 'adam', 'model': 'SimpleClassifier', 'loss': 'crossentropy', 'batch_size': 200}
 
-simple_classifier = SimpleClassifier(input_shape=600, linear_layers=2)
+simple_classifier = SimpleClassifier(input_shape=600, linear_layers=2, layer1_nodes=600)
 
 lr_schedule = keras.optimizers.schedules.ExponentialDecay(
     initial_learning_rate=params['lr'],
@@ -40,12 +40,12 @@ lr_schedule = keras.optimizers.schedules.ExponentialDecay(
     decay_rate=0.9)
 opt = keras.optimizers.Adam(learning_rate=params['lr'])
 
-simple_classifier.model.compile(optimizer=opt, loss=keras.losses.CategoricalCrossentropy(), metrics=['accuracy'])#, keras.metrics.Precision(), keras.metrics.Recall()])
+simple_classifier.model.compile(optimizer=opt, loss=keras.losses.CategoricalCrossentropy(), metrics=['accuracy', keras.metrics.Precision(), keras.metrics.Recall()])
 
 def filter_nans(arr):
     arr=np.asarray(arr).astype(np.float64)
     return np.isnan(np.sum(arr))
-path_to_df = "train_df_w_embeddings.pickle" #"train_df_w_embeddings.pickle"
+path_to_df = "trained_word2vec_embeddings.pickle" #"train_df_w_embeddings.pickle"
 # load data
 with open(path_to_df, 'rb') as f:
     df = pickle.load(f)
@@ -93,7 +93,7 @@ print(y_train.shape)
 simple_classifier.model.summary()
 simple_classifier.model.fit(X_train, y_train,
           batch_size=params['batch_size'],
-          epochs=50,
+          epochs=25,
           verbose=1, validation_data=(X_test, y_test))
 
 simple_classifier.model.save("./test/simple_classifier_w_google_word2vec_only_train_balanced")
